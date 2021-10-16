@@ -15,10 +15,13 @@ function app() {
         }
         input = document.querySelector('.selector').value;
         if (input) {
-            checkSelectorType();
+            arrFromInputSelector();
+            addSomeStyles(selectorArr[counter]);
+            currentElement = selectorArr[counter];
             buttonNextSwitcher();
             buttonPreviousSwitcher();
             domNavigationSwitcher();
+
         }
     })
 
@@ -26,44 +29,60 @@ function app() {
         counter += 1;
         buttonNextSwitcher();
         buttonNextElem();
+        currentElement = selectorArr[counter];
     })
 
     document.querySelector('.selector-prev').addEventListener('click', () => {
         counter += -1;
         buttonPreviousSwitcher();
         buttonPreviousElem();
+        currentElement = selectorArr[counter];
     })
 
     document.querySelector('.nav-top').addEventListener('click', () => {
-        checkSelectorType();
+        arrFromInputSelector();
+        document.querySelector('.selector-prev').disabled = true;
+        document.querySelector('.selector-next').disabled = true;
         buttonParentElem();
+        domNavigationSwitcher();
     })
 
     document.querySelector('.nav-bottom').addEventListener('click', () => {
-        checkSelectorType();
+        arrFromInputSelector();
+        document.querySelector('.selector-prev').disabled = true;
+        document.querySelector('.selector-next').disabled = true;
         buttonChildElem();
+        domNavigationSwitcher();
     })
 
     document.querySelector('.nav-left').addEventListener('click', () => {
-        checkSelectorType();
-        buttonPreviousElem();
+        arrFromInputSelector();
+        document.querySelector('.selector-prev').disabled = true;
+        document.querySelector('.selector-next').disabled = true;
+        buttonPreviousSiblingElem();
+        domNavigationSwitcher();
     })
 
     document.querySelector('.nav-right').addEventListener('click', () => {
-        checkSelectorType();
-        buttonNextElem();
+        arrFromInputSelector();
+        document.querySelector('.selector-prev').disabled = true;
+        document.querySelector('.selector-next').disabled = true;
+        buttonNextSiblingElem();
+        domNavigationSwitcher();
     })
+
 //  DOM navigation switchers
-    // ===========================================================================================================================
     function domNavigationSwitcher() {
-        parentSwitcher(selectorArr[counter]);
-        firstChildSwitcher(selectorArr[counter]);
-        previousSiblingSwitcher(selectorArr[counter]);
-        nextSiblingSwitcher(selectorArr[counter]);
+        parentSwitcher(currentElement);
+        firstChildSwitcher(currentElement);
+        previousSiblingSwitcher(currentElement);
+        nextSiblingSwitcher(currentElement);
+        console.log('=================================================================');
     }
 
     function parentSwitcher(elem) {
         if (elem.parentNode) {
+            console.log('in parent');
             document.querySelector('.nav-top').disabled = false;
         } else {
             document.querySelector('.nav-top').disabled = true;
@@ -71,7 +90,8 @@ function app() {
     }
 
     function firstChildSwitcher(elem) {
-        if (elem.firstChild) {
+        if (elem.children[0]) {
+            console.log('in child');
             document.querySelector('.nav-bottom').disabled = false;
         } else {
             document.querySelector('.nav-bottom').disabled = true;
@@ -80,6 +100,7 @@ function app() {
 
     function previousSiblingSwitcher(elem) {
         if (elem.previousElementSibling) {
+            console.log('in prev');
             document.querySelector('.nav-left').disabled = false;
         } else {
             document.querySelector('.nav-left').disabled = true;
@@ -88,13 +109,12 @@ function app() {
 
     function nextSiblingSwitcher(elem) {
         if (elem.nextElementSibling) {
+            console.log('in next');
             document.querySelector('.nav-right').disabled = false;
         } else {
             document.querySelector('.nav-right').disabled = true;
         }
     }
-
-    // ===========================================================================================================================
     // Element navigation switchers
 
     function buttonNextSwitcher() {
@@ -113,8 +133,6 @@ function app() {
         }
     }
 
-    // ==========================================================================================
-
     function addSomeStyles(elem) {
         let styleSheet = document.createElement('style');
         let text = document.createTextNode('\n.current-element {\n outline: solid red 5px;\n background-color: lightblue;\n}');
@@ -123,71 +141,67 @@ function app() {
         elem.className = elem.className + ' current-element';
     }
 
-    // =========================================================================================
     // DOM navigation buttons
     function buttonParentElem() {
-        if (document.querySelector('.current-element')) {
-            document.querySelector('.current-element').classList.remove('current-element');
+        if (currentElement.parentNode.classList) {
             if (document.querySelector('.current-element')) {
                 document.querySelector('.current-element').classList.remove('current-element');
+                if (document.querySelector('.current-element')) {
+                    document.querySelector('.current-element').classList.remove('current-element');
+                }
             }
+            currentElement = currentElement.parentNode;
+            addSomeStyles(currentElement);
         }
-
-        document.querySelector('.selector-prev').disabled = true;
-        document.querySelector('.selector-next').disabled = true;
-        currentElement = currentElement.parentNode;
-        addSomeStyles(currentElement);
     }
 
     function buttonChildElem() {
-        if (document.querySelector('.current-element')) {
-            document.querySelector('.current-element').classList.remove('current-element');
+        if (currentElement.children[0]){
             if (document.querySelector('.current-element')) {
                 document.querySelector('.current-element').classList.remove('current-element');
+                if (document.querySelector('.current-element')) {
+                    document.querySelector('.current-element').classList.remove('current-element');
+                }
             }
+            console.log(currentElement, '1');
+            currentElement = currentElement.children[0];
+            console.log(currentElement, '2');
+            addSomeStyles(currentElement);
         }
-
-        document.querySelector('.selector-prev').disabled = true;
-        document.querySelector('.selector-next').disabled = true;
-        currentElement = currentElement.firstChild;
-        addSomeStyles(currentElement);
     }
 
-    function buttonPreviousElem() {
-        if (document.querySelector('.current-element')) {
-            document.querySelector('.current-element').classList.remove('current-element');
+    function buttonPreviousSiblingElem() {
+        if (currentElement.previousElementSibling) {
             if (document.querySelector('.current-element')) {
                 document.querySelector('.current-element').classList.remove('current-element');
+                if (document.querySelector('.current-element')) {
+                    document.querySelector('.current-element').classList.remove('current-element');
+                }
             }
+            currentElement = currentElement.previousElementSibling;
+            addSomeStyles(currentElement);
         }
+    }
 
-        document.querySelector('.selector-prev').disabled = true;
-        document.querySelector('.selector-next').disabled = true;
-        currentElement = currentElement.previousElementSibling;
-        addSomeStyles(currentElement);
+    function buttonNextSiblingElem() {
+        if (currentElement.nextElementSibling) {
+            if (document.querySelector('.current-element')) {
+                document.querySelector('.current-element').classList.remove('current-element');
+                if (document.querySelector('.current-element')) {
+                    document.querySelector('.current-element').classList.remove('current-element');
+                }
+            }
+            currentElement = currentElement.nextElementSibling;
+            addSomeStyles(currentElement);
+        }
     }
 
     function buttonNextElem() {
         if (document.querySelector('.current-element')) {
             document.querySelector('.current-element').classList.remove('current-element');
-            if (document.querySelector('.current-element')) {
-                document.querySelector('.current-element').classList.remove('current-element');
-            }
         }
-
-        document.querySelector('.selector-prev').disabled = true;
-        document.querySelector('.selector-next').disabled = true;
-        currentElement = currentElement.nextElementSibling;
-        addSomeStyles(currentElement);
-    }
-
-// =========================================================================================
-
-    function buttonNextElem() {
-        if (document.querySelector('.current-element')) {
-            document.querySelector('.current-element').classList.remove('current-element');
-        }
-        checkSelectorType();
+        arrFromInputSelector();
+        addSomeStyles(selectorArr[counter]);
         buttonPreviousSwitcher();
         domNavigationSwitcher();
 
@@ -197,30 +211,15 @@ function app() {
         if (document.querySelector('.current-element')) {
             document.querySelector('.current-element').classList.remove('current-element');
         }
-        checkSelectorType();
+        arrFromInputSelector();
+        addSomeStyles(selectorArr[counter]);
         buttonNextSwitcher();
         domNavigationSwitcher();
 
     }
 
-    function checkSelectorType() {
-        if (document.querySelector(`#${input}`) !== null) {
-            selectorArr = Array.from(document.querySelectorAll(`#${input}`));
-            addSomeStyles(selectorArr[counter]);
-        }
-
-        if (document.querySelector(`.${input}`) !== null) {
-            selectorArr = Array.from(document.querySelectorAll(`.${input}`));
-            addSomeStyles(selectorArr[counter]);
-        }
-
-        if (document.querySelector(`${input}`) !== null) {
-            selectorArr = Array.from(document.querySelectorAll(`${input}`));
-            if (counter >= 0 && counter < selectorArr.length) {
-                addSomeStyles(selectorArr[counter]);
-            }
-        }
-        currentElement = selectorArr[counter];
+    function arrFromInputSelector() {
+        selectorArr = Array.from(document.querySelectorAll(`${input}`));
     }
 }
 
